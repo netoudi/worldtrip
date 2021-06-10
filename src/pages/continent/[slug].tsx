@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import Header from '../../components/Header';
 import { Flex, Grid, Heading, Image, Text } from '@chakra-ui/react';
 import Container from '../../components/Container';
@@ -16,6 +17,9 @@ export default function ContinentPage({
 }: ContinentPageProps) {
   return (
     <>
+      <Head>
+        <title>{continent.name} | WorldTrip</title>
+      </Head>
       <Header />
       <main>
         <Flex

@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import Link from 'next/link';
 import { Flex, Heading, Text } from '@chakra-ui/react';
 import Header from '../components/Header';
@@ -5,6 +6,9 @@ import Header from '../components/Header';
 export default function Custom404() {
   return (
     <>
+      <Head>
+        <title>404 | WorldTrip</title>
+      </Head>
       <Header />
       <Flex
         w="100%"

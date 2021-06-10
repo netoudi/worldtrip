@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import {
   Box,
   Center,
@@ -23,6 +24,9 @@ export type HomeProps = {
 export default function Home({ highlights }: HomeProps) {
   return (
     <>
+      <Head>
+        <title>WorldTrip</title>
+      </Head>
       <Header />
       <main>
         <section>
