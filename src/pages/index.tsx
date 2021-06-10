@@ -7,13 +7,20 @@ import {
   Heading,
   Text,
 } from '@chakra-ui/react';
+import { GetStaticProps } from 'next';
 import Header from '../components/Header';
 import Banner from '../components/Banner';
 import TravelTypes from '../components/TravelTypes';
 import Container from '../components/Container';
 import Carousel from '../components/Carousel';
+import api from '../services/api';
+import { Highlights } from '../utils/models';
 
-export default function Home() {
+export type HomeProps = {
+  highlights: Highlights[];
+};
+
+export default function Home({ highlights }: HomeProps) {
   return (
     <>
       <Header />
@@ -72,9 +79,20 @@ export default function Home() {
           margin="auto"
           marginY={['20px', '40px']}
         >
-          <Carousel />
+          <Carousel highlights={highlights} />
         </Box>
       </main>
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const response = await api.get('/highlights');
+
+  return {
+    revalidate: 60 * 60, // 1 hour
+    props: {
+      highlights: response.data,
+    },
+  };
+};

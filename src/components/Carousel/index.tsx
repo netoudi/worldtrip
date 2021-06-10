@@ -1,23 +1,24 @@
-import { Box, Flex, Heading, Text } from '@chakra-ui/react';
+import NextLink from 'next/link';
+import { Box, Flex, Heading, Link, Text } from '@chakra-ui/react';
 import { FunctionComponent } from 'react';
-
-// Import Swiper React components
 import { Swiper, SwiperSlide } from 'swiper/react';
-
-// import Swiper core and required modules
 import SwiperCore, { Autoplay, Navigation, Pagination } from 'swiper/core';
+import { Highlights } from '../../utils/models';
 
-// install Swiper modules
 SwiperCore.use([Autoplay, Pagination, Navigation]);
 
-const Carousel: FunctionComponent = () => {
+export type CarouselProps = {
+  highlights: Highlights[];
+};
+
+const Carousel: FunctionComponent<CarouselProps> = ({ highlights }) => {
   return (
     <Box position="relative" height="100%">
       <Swiper
         spaceBetween={30}
         centeredSlides={true}
         autoplay={{
-          delay: 3000,
+          delay: 5000,
           disableOnInteraction: false,
         }}
         pagination={{
@@ -26,13 +27,13 @@ const Carousel: FunctionComponent = () => {
         navigation={true}
         className="mySwiper"
       >
-        {[1, 2, 3, 4, 5].map((item) => {
+        {highlights.map((highlight) => {
           return (
-            <SwiperSlide key={item}>
+            <SwiperSlide key={highlight.title}>
               <Flex
                 width="100%"
                 height="100%"
-                backgroundImage="url('/images/europa.jpg')"
+                backgroundImage={`url('${highlight.image}')`}
                 backgroundPosition="center"
                 backgroundSize="cover"
               >
@@ -41,18 +42,26 @@ const Carousel: FunctionComponent = () => {
                   flexDirection="column"
                   justifyContent="center"
                   alignItems="center"
-                  backgroundColor={'rgba(0, 0, 0, 0.35)'}
+                  backgroundColor={'rgba(0, 0, 0, 0.7)'}
                 >
-                  <Heading
-                    color="gray.200"
-                    fontSize={['24px', '48px']}
-                    fontWeight="700"
-                  >
-                    Europa
-                  </Heading>
-                  <Text color="gray.300" fontSize={['14px', '24px']}>
-                    O continente mais antigo.
-                  </Text>
+                  <NextLink href={`/continent/${highlight.slug}`} passHref>
+                    <Link
+                      maxWidth="60%"
+                      textAlign="center"
+                      _hover={{ textDecoration: 'none' }}
+                    >
+                      <Heading
+                        color="gray.200"
+                        fontSize={['24px', '48px']}
+                        fontWeight="700"
+                      >
+                        {highlight.title}
+                      </Heading>
+                      <Text color="gray.300" fontSize={['14px', '24px']}>
+                        {highlight.subtitle}
+                      </Text>
+                    </Link>
+                  </NextLink>
                 </Flex>
               </Flex>
             </SwiperSlide>
