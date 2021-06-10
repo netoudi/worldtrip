@@ -1,8 +1,19 @@
 import Header from '../../components/Header';
 import { Flex, Grid, Heading, Image, Text } from '@chakra-ui/react';
 import Container from '../../components/Container';
+import { GetStaticPaths, GetStaticProps } from 'next';
+import api from '../../services/api';
+import { City, Continent } from '../../utils/models';
 
-export default function Continent() {
+export type ContinentPageProps = {
+  continent: Continent;
+  cities: City[];
+};
+
+export default function ContinentPage({
+  continent,
+  cities,
+}: ContinentPageProps) {
   return (
     <>
       <Header />
@@ -11,7 +22,7 @@ export default function Continent() {
           width="100%"
           maxWidth="1440"
           margin="auto"
-          backgroundImage="url('/images/europa.jpg')"
+          backgroundImage={`url('${continent.image}')`}
           backgroundPosition="center"
           backgroundSize="cover"
           height={[150, 500]}
@@ -29,7 +40,7 @@ export default function Continent() {
               fontSize={['28px', '48px']}
               fontWeight="500"
             >
-              Europa
+              {continent.name}
             </Heading>
           </Flex>
         </Flex>
@@ -47,11 +58,7 @@ export default function Continent() {
                 fontWeight="400"
                 lineHeight={['24px', '36px']}
               >
-                A Europa é, por convenção, um dos seis continentes do mundo.
-                Compreendendo a península ocidental da Eurásia, a Europa
-                geralmente divide-se da Ásia a leste pela divisória de águas dos
-                montes Urais, o rio Ural, o mar Cáspio, o Cáucaso, e o mar Negro
-                a sudeste
+                {continent.description}
               </Text>
             </Flex>
             <Flex justifyContent="center" alignItems="center">
@@ -68,7 +75,7 @@ export default function Continent() {
                     lineHeight="1"
                     textAlign={['left', 'center']}
                   >
-                    50
+                    {continent.countries}
                   </Text>
                   <Text
                     color="gray.600"
@@ -86,7 +93,7 @@ export default function Continent() {
                     lineHeight="1"
                     textAlign={['left', 'center']}
                   >
-                    60
+                    {continent.languages}
                   </Text>
                   <Text
                     color="gray.600"
@@ -104,7 +111,7 @@ export default function Continent() {
                     lineHeight="1"
                     textAlign={['left', 'center']}
                   >
-                    27
+                    {cities.length}
                   </Text>
                   <Text
                     color="gray.600"
@@ -137,10 +144,10 @@ export default function Continent() {
               ]}
               my={['20px', '40px']}
             >
-              {[1, 2, 3, 4, 5, 6, 7, 8].map((city) => {
+              {cities.map((city) => {
                 return (
                   <Flex
-                    key={city}
+                    key={city.id}
                     background="white"
                     flexDirection="column"
                     borderRadius="md"
@@ -149,8 +156,8 @@ export default function Continent() {
                     <Image
                       boxSize="100%"
                       objectFit="contain"
-                      src={`https://source.unsplash.com/user/willianjusten/1042x58${city}`}
-                      alt="WorldTrip"
+                      src={city.image}
+                      alt={`${city.name} / ${city.country}`}
                     />
                     <Flex
                       flexDirection="row"
@@ -172,23 +179,28 @@ export default function Continent() {
                           fontSize={['14px', '20px']}
                           fontWeight="500"
                         >
-                          Londres
+                          {city.name}
                         </Text>
                         <Text
                           color="gray.500"
                           fontSize={['14px', '16px']}
                           fontWeight="500"
                         >
-                          Reino Unido
+                          {city.country}
                         </Text>
                       </Flex>
-                      <Image
-                        boxSize="30"
-                        objectFit="cover"
-                        src="/images/uk.svg"
-                        alt="WorldTrip"
-                        borderRadius="full"
-                      />
+                      {city.flag && (
+                        <Image
+                          boxSize="30"
+                          objectFit="cover"
+                          src={city.flag}
+                          alt={`Flag of ${city.country}`}
+                          borderRadius="full"
+                          borderWidth="1px"
+                          borderColor="gray.300"
+                          borderStyle="solid"
+                        />
+                      )}
                     </Flex>
                   </Flex>
                 );
@@ -200,3 +212,33 @@ export default function Continent() {
     </>
   );
 }
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const response = await api.get('/continents');
+
+  const paths = response.data.map(({ id }) => ({
+    params: { slug: id },
+  }));
+
+  return { paths, fallback: 'blocking' };
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  const { data: continent } = await api.get(`/continents/${params.slug}`);
+
+  if (!continent) {
+    return {
+      notFound: true,
+    };
+  }
+
+  const { data: cities } = await api.get(`/cities?continentId=${continent.id}`);
+
+  return {
+    revalidate: 60 * 60, // 1 hour
+    props: {
+      continent,
+      cities,
+    },
+  };
+};
