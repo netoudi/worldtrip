@@ -1,8 +1,17 @@
-import { Box, Grid } from '@chakra-ui/react';
+import {
+  Box,
+  Center,
+  Divider,
+  Flex,
+  Grid,
+  Heading,
+  Text,
+} from '@chakra-ui/react';
 import Header from '../components/Header';
 import Banner from '../components/Banner';
 import TravelTypes from '../components/TravelTypes';
 import Container from '../components/Container';
+import Carousel from '../components/Carousel';
 
 export default function Home() {
   return (
@@ -33,6 +42,37 @@ export default function Home() {
               <TravelTypes type="more" />
             </Grid>
           </Container>
+        </Box>
+
+        <Flex justifyContent="center" alignItems="center">
+          <Center width={['60px', '90px']}>
+            <Divider my={[2, 6]} borderColor="gray.600" />
+          </Center>
+        </Flex>
+
+        <Container>
+          <Flex w="100%" flexDirection="column" alignItems="center">
+            <Heading
+              color="gray.600"
+              fontSize={['26px', '36px']}
+              fontWeight="500"
+            >
+              Vamos nessa?
+            </Heading>
+            <Text color="gray.600" fontSize={['18px', '28px']} fontWeight="300">
+              Então escolha seu continente
+            </Text>
+          </Flex>
+        </Container>
+
+        <Box
+          width="100%"
+          maxWidth="1240px"
+          height={['250px', '450px']}
+          margin="auto"
+          marginY={['20px', '40px']}
+        >
+          <Carousel />
         </Box>
       </main>
     </>
